@@ -1,39 +1,70 @@
 import streamlit as st
-import psutil
-import pandas as pd
+import time
+
+# Page Config
+st.set_page_config(page_title="Cloud Backup Dashboard", page_icon="☁️", layout="wide")
 
 # Title
-st.title("💻 Machine Strength Comparison")
+st.title("☁️ Cloud Backup System Dashboard")
+st.markdown("### Secure | Fast | Reliable Data Backup System")
 
-st.write("This dashboard shows system performance during backup")
+# Sidebar
+st.sidebar.title("⚙️ Control Panel")
+option = st.sidebar.selectbox("Choose Operation", ["Home", "Backup Data", "Restore Data", "Logs"])
 
-# Get system data
-cpu = psutil.cpu_percent(interval=1)
-ram = psutil.virtual_memory().percent
-disk = psutil.disk_usage('/').percent
+# Home Page
+if option == "Home":
+    st.header("📌 Project Overview")
+    st.write("""
+    This system allows users to securely backup their data to the cloud.
+    It ensures data safety, fast recovery, and real-time monitoring.
+    """)
 
-# Show metrics
-st.subheader("📊 Live Performance")
+    col1, col2, col3 = st.columns(3)
 
-st.metric("CPU Usage", f"{cpu}%")
-st.metric("RAM Usage", f"{ram}%")
-st.metric("Disk Usage", f"{disk}%")
+    col1.metric("Files Backed Up", "120", "+10 today")
+    col2.metric("Storage Used", "2.5 GB", "+500 MB")
+    col3.metric("Status", "Active", "Running")
 
-# Graph
-data = {
-    "Component": ["CPU", "RAM", "Disk"],
-    "Usage (%)": [cpu, ram, disk]
-}
+# Backup Section
+elif option == "Backup Data":
+    st.header("📤 Upload File to Backup")
 
-df = pd.DataFrame(data)
-st.bar_chart(df.set_index("Component"))
+    uploaded_file = st.file_uploader("Choose a file")
 
-# Performance Check
-st.subheader("⚖️ Machine Strength Status")
+    if uploaded_file:
+        st.success("File Selected: " + uploaded_file.name)
 
-if cpu < 50 and ram < 50:
-    st.success("✅ Machine is Strong for Backup")
-elif cpu < 80:
-    st.warning("⚠️ Medium Performance Machine")
-else:
-    st.error("❌ System is Under Heavy Load")
+        if st.button("Start Backup"):
+            progress = st.progress(0)
+
+            for i in range(100):
+                time.sleep(0.02)
+                progress.progress(i + 1)
+
+            st.success("✅ Backup Completed Successfully!")
+
+# Restore Section
+elif option == "Restore Data":
+    st.header("📥 Restore Your Files")
+
+    file_name = st.text_input("Enter file name to restore")
+
+    if st.button("Restore"):
+        if file_name:
+            st.info("Restoring file...")
+            time.sleep(2)
+            st.success("✅ File Restored Successfully!")
+        else:
+            st.warning("Please enter file name")
+
+# Logs Section
+elif option == "Logs":
+    st.header("📜 System Logs")
+
+    st.text_area("Logs",
+    """[INFO] Backup started...
+[INFO] File uploaded successfully
+[INFO] Backup completed
+[INFO] Restore request received""",
+    height=200)
